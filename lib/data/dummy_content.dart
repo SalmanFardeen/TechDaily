@@ -15,21 +15,27 @@ const DUMMY_CONTENTS = const [
       title: "How to Refund a Game on Steam PC",
       img:
       "https://cdn.cloudflare.steamstatic.com/store/about/social-og.jpg",
-      owner: "Beeboom",
+      owner: "GSM Arena",
       uploadTime: "May 4, 2021"),
   Content(
       id: "c3",
       title: "Redmi Note 10S India Launch Set for May 13",
       img:
       "https://beebom.com/wp-content/uploads/2021/05/redmi-note-10s-india-launch-announced.jpg",
-      owner: "Beeboom",
+      owner: "Cnet",
       uploadTime: "May 3, 2021"),
   Content(
-      id: "c1",
+      id: "c4",
       title: "How to Put an New Apple AirTag in Lost Mode",
       img:
       "https://beebom.com/wp-content/uploads/2021/05/how-to-put-an-AirTag-in-lost-mode-356x220.jpg",
-      owner: "Beeboom",
+      owner: "Android Authority",
       uploadTime: "May 4, 2021"),
-
+  Content(
+      id: "c5",
+      title: "Redmi Note 10S India Launch Set for May 13",
+      img:
+      "https://beebom.com/wp-content/uploads/2021/05/redmi-note-10s-india-launch-announced.jpg",
+      owner: "Tech Genyz",
+      uploadTime: "May 3, 2021"),
 ];
