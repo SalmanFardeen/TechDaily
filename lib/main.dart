@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techdaily/screens/conent_list_screen.dart';
+import 'package:simple_dark_mode_webview/hexColor.dart';
+import 'package:simple_dark_mode_webview/simpledarkmodewebview.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,7 +11,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Daily Techs',
-      theme: ThemeData.dark(),
+      // darkTheme: ThemeData(
+      //   brightness: Brightness.dark,
+      //   primarySwatch: Colors.blue,
+      // ),
       home: ContentListScreen(),
     );
   }

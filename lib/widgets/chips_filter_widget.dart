@@ -22,12 +22,11 @@ class _ChipFilterState extends State<ChipFilter> {
       padding: const EdgeInsets.only(left: 14),
       child: Container(
         child: FilterChip(
-
             label: Text(
               widget.owner,
               style: TextStyle(fontSize: 14),
             ),
-            backgroundColor: Colors.black38,
+            backgroundColor: Colors.black54,
             selected: _isSelected,
             selectedColor: Colors.black12,
             onSelected: (isSelected) {
