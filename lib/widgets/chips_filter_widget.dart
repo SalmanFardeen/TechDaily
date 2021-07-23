@@ -25,9 +25,9 @@ class _ChipFilterState extends State<ChipFilter> {
         child: FilterChip(
             label: Text(
               widget.ownerName,
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 14,color: _isSelected? Color.fromRGBO(35, 35, 35, 1):Color.fromRGBO(206, 206, 206, 1)),
             ),
-            backgroundColor: Colors.black54,
+            backgroundColor: Color.fromRGBO(34, 35, 34, 1),
             selected: _isSelected,
             selectedColor: Colors.black12,
             onSelected: (isSelected) {

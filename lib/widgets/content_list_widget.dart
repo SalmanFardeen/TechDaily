@@ -9,13 +9,14 @@ class ContentList extends StatelessWidget {
   final DateTime uploadTime;
   final String owner;
   final String url;
-  ContentList({this.title, this.img, this.uploadTime, this.id, this.owner, this.url});
+  ContentList(
+      {this.title, this.img, this.uploadTime, this.id, this.owner, this.url});
 
   void selectContent(BuildContext ctx) {
     Navigator.of(ctx).push(
       MaterialPageRoute(
         builder: (_) {
-          return ContentDetails(url:url);
+          return ContentDetails(url: url);
         },
       ),
     );
@@ -23,9 +24,10 @@ class ContentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('Width:' + MediaQuery.of(context).size.width.toString());
     return Container(
-      height: 170,
-      width: MediaQuery.of(context).size.width*1,
+      height: 172,
+      width: MediaQuery.of(context).size.width * 1,
       decoration: BoxDecoration(
         color: Color.fromRGBO(35, 34, 34, 1),
         borderRadius: BorderRadius.circular(15),
@@ -33,51 +35,67 @@ class ContentList extends StatelessWidget {
       margin: EdgeInsets.only(left: 14, right: 14, bottom: 20),
       child: GestureDetector(
         onTap: () => selectContent(context),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
-          child: Row(
-            children: [
-              Column(
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 20, 0, 0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width*.46,
-                    height: 86,
+                    width: MediaQuery.of(context).size.width * .4,
+                    height: 120,
                     child: Text(
                       title,
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      style: TextStyle(fontSize: 17, color: Colors.white),
                     ),
                   ),
-                  SizedBox(height: 30),
-                  Text(
-                    owner,
-                    style: TextStyle(fontSize: 16,color: Colors.white),
-                  ),
-                ],
-              ),
-              SizedBox(width: 30),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(img,
-                        height: 95, width: 116, fit: BoxFit.cover),
-                  ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 5),
                   uploadTime != null
                       ? Text(
                           DateFormat.yMMMEd().format(uploadTime).toString(),
-                          style: TextStyle(fontSize: 13, color: Colors.white),
+                          style: TextStyle(fontSize: 12, color: Colors.white),
                         )
                       : Text(
                           uploadTime.toString(),
                           style: TextStyle(fontSize: 13, color: Colors.white),
-                        )
+                        ),
                 ],
               ),
-            ],
-          ),
+            ),
+            SizedBox(width: 20, height: 0),
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(15),
+                      bottomRight: Radius.circular(15)),
+                  child: Image.network(img,
+                      height: 170, width: 169, fit: BoxFit.cover),
+                ),
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(35, 34, 34, .6),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              bottomRight: Radius.circular(15)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 6, horizontal: 11),
+                          child: Text(
+                            owner,
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        )),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
