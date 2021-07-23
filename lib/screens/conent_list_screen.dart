@@ -18,10 +18,16 @@ class ContentListScreen extends StatefulWidget {
 class _ContentListScreenState extends State<ContentListScreen> {
   Future<List<TechDailyContent>> _techDailyApi;
   Future<List<TechDailyOwner>> _techDailyOwner;
-  List<Content> contents = [];
+  List<TechDailyContent> contents = [];
   bool isSorted = true;
   List<String> chipsLabels = [];
-  List<Content> allContents = DUMMY_CONTENTS.toList();
+
+  bool shouldSort = false;
+  List<TechDailyContent> allContents = [];
+  List<TechDailyContent> sortedContents = [];
+
+  List<TechDailyOwner> owners = [];
+  Map<int, String> ownersMap = {};
 
   @override
   Widget build(BuildContext context) {
@@ -32,80 +38,108 @@ class _ContentListScreenState extends State<ContentListScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            children: [
-              SizedBox(
-                height: 80,
-                child: FutureBuilder<List<TechDailyOwner>>(
-                  future: _techDailyOwner,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return ChipFilter(
-                            owner: snapshot.data[index].name,
-                            onSelect: () {
-                              print('onSelect'+index.toString());
-                              // handleOnselect(index);
-                            },
-                            onUnselect: () {
-                              print('onUnSelect'+index.toString());
-                             // handleUnselect(index);
-                            },
-                          );
-                        },
-                      );
-                    } else
-                      return Center(child: CircularProgressIndicator());
-                  },
+            crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 80,
+                  padding: EdgeInsets.only(left: 6),
+                  // child: FutureBuilder<List<TechDailyOwner>>(
+                  //   future: _techDailyOwner,
+                  //   builder: (context, snapshot) {
+                  //     if (snapshot.hasData) {
+                  //       // setState(() {
+                  //       //   owners = snapshot.data;
+                  //       // });
+                  //       return ListView.builder(
+                  //         shrinkWrap: true,
+                  //         itemCount: snapshot.data.length,
+                  //         scrollDirection: Axis.horizontal,
+                  //         itemBuilder: (context, index) {
+                  //           return ChipFilter(
+                  //             ownerName: snapshot.data[index].name,
+                  //             onSelect: () {
+                  //               print('onSelect'+index.toString());
+                  //               // handleOnselect(index);
+                  //             },
+                  //             onUnselect: () {
+                  //               print('onUnSelect'+index.toString());
+                  //              // handleUnselect(index);
+                  //             },
+                  //           );
+                  //         },
+                  //       );
+                  //     } else
+                  //       return Center(child: CircularProgressIndicator());
+                  //   },
+                  // ),
+                  child:ListView.builder(
+            shrinkWrap: true,
+            itemCount: owners.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return ChipFilter(
+                ownerId: owners[index].id,
+                ownerName: owners[index].name,
+                onSelect: () {
+                  print('onSelect'+index.toString());
+                  // handleOnselect(index);
+                },
+                onUnselect: () {
+                  print('onUnSelect'+index.toString());
+                  // handleUnselect(index);
+                },
+              );
+            },
+          ),
                 ),
-              ),
-              FutureBuilder<List<TechDailyContent>>(
-                  future: _techDailyApi,
-                  builder: (context, snapshot) {
-                    print("snapshot owner: "+snapshot.toString());
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(top: 10),
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (context, index) {
-                          return ContentList(
-                            title: snapshot.data[index].title,
-                            img: snapshot.data[index].imgUrl,
-                            uploadTime: snapshot.data[index].pubDate,
-                            owner: snapshot.data[index].owner.toString(),
-                            url: snapshot.data[index].url,
-                          );
-                        },
-                      );
-                    } else
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 200),
-                        child: Center(child: CircularProgressIndicator()),
-                      );
-                  })
-              // ListView.builder(
-              //   physics: NeverScrollableScrollPhysics(),
-              //   padding: EdgeInsets.only(top: 10),
-              //   shrinkWrap: true,
-              //   itemCount: contents.length,
-              //   itemBuilder: (context, index) {
-              //     return ContentList(
-              //       title: contents[index].title,
-              //       img: contents[index].img,
-              //       uploadTime: contents[index].uploadTime,
-              //       owner: contents[index].owner,
-              //     );
-              //   },
-              // ),
-            ],
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.only(top: 10),
+            shrinkWrap: true,
+            itemCount: allContents.length,
+            itemBuilder: (context, index) {
+              return ContentList(
+                title: allContents[index].title,
+                img: allContents[index].imgUrl,
+                uploadTime: allContents[index].pubDate,
+                owner: ownersMap[allContents[index].owner] ?? allContents[index].owner.toString(),
+                url: allContents[index].url,
+              );
+            },
+          )
+                // FutureBuilder<List<TechDailyContent>>(
+                //     future: _techDailyApi,
+                //     builder: (context, snapshot) {
+                //       print("snapshot owner: "+snapshot.toString());
+                //       if (snapshot.hasData) {
+                //         // setState(() {
+                //         //   allContents = snapshot.data;
+                //         // });
+                //         return ListView.builder(
+                //           physics: NeverScrollableScrollPhysics(),
+                //           padding: EdgeInsets.only(top: 10),
+                //           shrinkWrap: true,
+                //           itemCount: snapshot.data.length,
+                //           itemBuilder: (context, index) {
+                //             return ContentList(
+                //               title: snapshot.data[index].title,
+                //               img: snapshot.data[index].imgUrl,
+                //               uploadTime: snapshot.data[index].pubDate,
+                //               owner: ownersMap[snapshot.data[index].owner] ?? snapshot.data[index].owner.toString(),
+                //               url: snapshot.data[index].url,
+                //             );
+                //           },
+                //         );
+                //       } else
+                //         return Padding(
+                //           padding: const EdgeInsets.only(top: 200),
+                //           child: Center(child: CircularProgressIndicator()),
+                //         );
+                //     }),
+              ],
+            ),
           ),
         ),
-      ),
     );
   }
 
@@ -116,7 +150,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
       if (contents.length == allContents.length) {
         contents = [];
       }
-      contents.addAll(allContents.where((Content content) {
+      contents.addAll(allContents.where((TechDailyContent content) {
         return content.owner == chipsLabels[index];
       }));
       print(contents.length);
@@ -125,7 +159,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
 
   void handleUnselect(int index) {
     setState(() {
-      contents.removeWhere((Content content) {
+      contents.removeWhere((TechDailyContent content) {
         return content.owner == chipsLabels[index];
       });
       if (contents.length == 0) {
@@ -140,9 +174,27 @@ class _ContentListScreenState extends State<ContentListScreen> {
   void initState() {
     _techDailyApi = ApiManager().getContents();
     _techDailyOwner = ApiOwnerManager().getContents();
-    allContents.forEach((Content content) {
-      chipsLabels.add(content.owner);
+
+    ApiManager().getContents().then((List<TechDailyContent> value) {
+      setState(() {
+        allContents = value;
+      });
     });
+
+    ApiOwnerManager().getContents().then((List<TechDailyOwner> value) {
+      Map<int, String> map = {};
+      for(TechDailyOwner owner in value){
+        map[owner.id] = owner.name;
+      }
+      setState(() {
+        ownersMap = map;
+        owners = value;
+      });
+    });
+
+    // allContents.forEach((TechDailyContent content) {
+    //   chipsLabels.add(content.owner);
+    // });
 
     contents = allContents;
     super.initState();

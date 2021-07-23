@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ChipFilter extends StatefulWidget {
-  final String owner;
+  final String ownerName;
   final String color;
   final bool selectState;
   final Function onSelect, onUnselect;
+  final int ownerId;
 
-  ChipFilter({this.owner, this.color, this.selectState,this.onSelect,this.onUnselect});
+  ChipFilter({this.ownerName, this.color, this.selectState,this.onSelect,this.onUnselect,this.ownerId});
 
   @override
   _ChipFilterState createState() => _ChipFilterState();
@@ -23,7 +24,7 @@ class _ChipFilterState extends State<ChipFilter> {
       child: Container(
         child: FilterChip(
             label: Text(
-              widget.owner,
+              widget.ownerName,
               style: TextStyle(fontSize: 14),
             ),
             backgroundColor: Colors.black54,
