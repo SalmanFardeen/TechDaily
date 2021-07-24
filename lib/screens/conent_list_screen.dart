@@ -30,82 +30,95 @@ class _ContentListScreenState extends State<ContentListScreen> {
     return Scaffold(
       drawer: DrawerWidget(),
       backgroundColor: Colors.black87,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 60,
-                padding: EdgeInsets.only(left: 6, top: 30),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: owners.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return ChipFilter(
-                      ownerId: owners[index].id,
-                      ownerName: owners[index].name,
-                      onSelect: () {
-                        handleOnSelect(owners[index].id);
-                      },
-                      onUnselect: () {
-                        print('onUnSelect' + index.toString());
-                        handleOnUnselect();
-                      },
-                    );
-                  },
-                ),
-              ),
-              SizedBox(height: 20),
-              _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : !_isSorted
-                      ? ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          padding: EdgeInsets.only(top: 10),
-                          shrinkWrap: true,
-                          itemCount: allContents.length,
-                          itemBuilder: (context, index) {
-                            return ContentList(
-                              title: allContents[index].title,
-                              img: allContents[index].imgUrl,
-                              uploadTime: allContents[index].pubDate,
-                              owner: ownersMap[allContents[index].owner] ??
-                                  allContents[index].owner.toString(),
-                              url: allContents[index].url,
-                            );
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Colors.black,
+            floating: true,
+            actions: [
+              Transform.scale(scale: 3,child: Image.asset('assets/images/techlogo.png',width: 380,),),
+            ],
+          ),
+          SliverToBoxAdapter(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 60,
+                    padding: EdgeInsets.only(left: 6, top: 30),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: owners.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return ChipFilter(
+                          ownerId: owners[index].id,
+                          ownerName: owners[index].name,
+                          onSelect: () {
+                            handleOnSelect(owners[index].id);
                           },
-                        )
-                      : _isSorted
+                          onUnselect: () {
+                            print('onUnSelect' + index.toString());
+                            handleOnUnselect();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  _isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : !_isSorted
                           ? ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
                               padding: EdgeInsets.only(top: 10),
                               shrinkWrap: true,
-                              itemCount: sortedContents.length,
+                              itemCount: allContents.length,
                               itemBuilder: (context, index) {
                                 return ContentList(
-                                  title: sortedContents[index].title,
-                                  img: sortedContents[index].imgUrl,
-                                  uploadTime: sortedContents[index].pubDate,
+                                  title: allContents[index].title,
+                                  img: allContents[index].imgUrl,
+                                  uploadTime: allContents[index].pubDate,
                                   owner:
-                                      ownersMap[sortedContents[index].owner] ??
-                                          sortedContents[index]
-                                              .owner
-                                              .toString(),
-                                  url: sortedContents[index].url,
+                                      ownersMap[allContents[index].owner] ??
+                                          allContents[index].owner.toString(),
+                                  url: allContents[index].url,
                                 );
                               },
                             )
-                          : Center(
-                              child: Text(
-                                'No Data',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-            ],
-          ),
-        ),
+                          : _isSorted
+                              ? ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  padding: EdgeInsets.only(top: 10),
+                                  shrinkWrap: true,
+                                  itemCount: sortedContents.length,
+                                  itemBuilder: (context, index) {
+                                    return ContentList(
+                                      title: sortedContents[index].title,
+                                      img: sortedContents[index].imgUrl,
+                                      uploadTime:
+                                          sortedContents[index].pubDate,
+                                      owner: ownersMap[
+                                              sortedContents[index].owner] ??
+                                          sortedContents[index]
+                                              .owner
+                                              .toString(),
+                                      url: sortedContents[index].url,
+                                    );
+                                  },
+                                )
+                              : Center(
+                                  child: Text(
+                                    'No Data',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

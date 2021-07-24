@@ -37,6 +37,7 @@ class ApiManager {
       var response = await client.get(
           Uri.parse('https://techdailyapi.herokuapp.com/owners/'));
 
+
       if (response.statusCode == 200) {
         var jsonStrings = response.body;
         List jsonMap = json.decode(jsonStrings);
