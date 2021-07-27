@@ -166,7 +166,11 @@ class _ContentListScreenState extends State<ContentListScreen> {
         sortedContents = value;
       });
     });
+
     setState(() {
+      sortedContents.addAll(allContents.where((TechDailyContent content) {
+        return content.owner == currentOwner;
+      }));
       _isSorted = true;
     });
   }

@@ -15,8 +15,6 @@ class ChipFilter extends StatefulWidget {
 }
 
 class _ChipFilterState extends State<ChipFilter> {
-  // bool widgetshoudSelect = false;
-  Function sortedList;
 
   @override
   Widget build(BuildContext context) {
