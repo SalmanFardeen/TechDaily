@@ -16,11 +16,12 @@ class ContentListScreen extends StatefulWidget {
 class _ContentListScreenState extends State<ContentListScreen> {
   bool _isSorted = false;
   bool _isLoading = true;
-  List<String> chipsLabels = [];
+  //List<String> chipsLabels = [];
   int currentOwner;
+  int recentOwner;
   Object redrawObject;
 
-  bool shouldSort = false;
+  //bool shouldSort = false;
   List<TechDailyContent> allContents = [];
   List<TechDailyContent> sortedContents = [];
 
@@ -31,7 +32,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('Widget building');
+    print("'ContentListScreen' Widget building");
     return Scaffold(
       // key: _scaffoldKey,
       drawer: DrawerWidget(),
@@ -74,7 +75,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
                           return ChipFilter(
-                            ownerId: owners[index].id,
+                            // ownerId: owners[index].id,
                             ownerName: owners[index].name,
                             shouldSelect:
                                 currentOwner == owners[index].id ? true : false,
@@ -87,10 +88,11 @@ class _ContentListScreenState extends State<ContentListScreen> {
                               handleOnSelect(owners[index].id);
                             },
                             onUnselect: () {
-                              print('onUnSelect' + index.toString());
+                              print('unselected chip ownerId: ' + index.toString());
 
                               setState(() {
                                 redrawObject = Object();
+                                recentOwner = owners[index].id;
                                 currentOwner = -1;
                               });
                               handleOnUnselect();
@@ -158,20 +160,29 @@ class _ContentListScreenState extends State<ContentListScreen> {
   }
 
   void handleOnSelect(int ownerId) {
-    print('chip selected ' + ownerId.toString());
+    print('selected chip ownerId: ' + ownerId.toString());
+
+    if(ownerId == recentOwner){
+      setState(() {
+        _isSorted = true;
+      });
+      return;
+    }
+
+    setState(() {
+      sortedContents = [];
+      sortedContents.addAll(allContents.where((TechDailyContent content) {
+        return content.owner == currentOwner;
+      }));
+      _isSorted = true;
+    });
+
     ApiManager()
         .getContentsByOwner(ownerId)
         .then((List<TechDailyContent> value) {
       setState(() {
         sortedContents = value;
       });
-    });
-
-    setState(() {
-      sortedContents.addAll(allContents.where((TechDailyContent content) {
-        return content.owner == currentOwner;
-      }));
-      _isSorted = true;
     });
   }
 

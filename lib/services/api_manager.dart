@@ -14,10 +14,10 @@ class ApiManager {
       var response = await client.get( Uri.parse('https://techdailyapi.herokuapp.com/contents/'));
 
       if (response.statusCode == 200) {
-        print('statusCode: '+200.toString());
+        print("'/contents' endpoint statusCode: 200");
         var jsonString = response.body;
         List jsonMap = json.decode(jsonString);
-        print(jsonMap);
+        print("fetched 'contents' list length: " + jsonMap.length.toString());
        return  jsonMap.map((content) => TechDailyContent.fromJson(content)).toList();
 
       }
@@ -37,10 +37,11 @@ class ApiManager {
       var response = await client.get(
           Uri.parse('https://techdailyapi.herokuapp.com/owners/'));
 
-
       if (response.statusCode == 200) {
+        print("'/owners' endpoint statusCode: 200");
         var jsonStrings = response.body;
         List jsonMap = json.decode(jsonStrings);
+        print("fetched 'owners' list length: " + jsonMap.length.toString());
         return jsonMap.map((owner) =>TechDailyOwner.fromJson(owner)).toList();
       }
     }
@@ -61,10 +62,10 @@ class ApiManager {
       var response = await client.get( Uri.parse('http://techdailyapi.herokuapp.com/contents/search/owner_id/'+ownerId.toString()));
 
       if (response.statusCode == 200) {
-        print('statusCode: '+200.toString());
+        print("'/contents/search/owner_id/\$owner_id' endpoint statusCode: 200");
         var jsonString = response.body;
         List jsonMap = json.decode(jsonString);
-        print(jsonMap);
+        print("fetched 'contents' list length: " + jsonMap.length.toString());
         return  jsonMap.map((content) => TechDailyContent.fromJson(content)).toList();
 
       }
