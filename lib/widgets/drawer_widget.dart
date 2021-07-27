@@ -109,13 +109,13 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   Future<void> selectedItem(BuildContext context, int index) async {
     switch (index) {
       case 0:
-        print('favorites' + index.toString());
+        print('Selected drawer item: ' + index.toString() + " - 'Favourites' page" );
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => FavoritesScreen(),
         ));
         break;
       case 1:
-        print('favorites' + index.toString());
+        print('Selected drawer item:' + index.toString() + " - 'About Us' page" );
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => AboutUsScreen(),
         ));

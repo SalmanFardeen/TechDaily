@@ -5,7 +5,7 @@ class FavoritesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Container(child: Text('Favroites')),
+        child: Container(child: Text('Favourites')),
       ),
     );
   }

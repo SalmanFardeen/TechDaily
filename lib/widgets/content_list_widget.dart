@@ -24,7 +24,7 @@ class ContentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Width:' + MediaQuery.of(context).size.width.toString());
+    // print('Width:' + MediaQuery.of(context).size.width.toString());
     return Container(
       height: 172,
       width: MediaQuery.of(context).size.width * 1,

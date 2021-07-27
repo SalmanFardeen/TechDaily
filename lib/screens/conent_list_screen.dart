@@ -88,7 +88,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                               handleOnSelect(owners[index].id);
                             },
                             onUnselect: () {
-                              print('unselected chip ownerId: ' + index.toString());
+                              print('unselected chip ownerId: ' + owners[index].id.toString());
 
                               setState(() {
                                 redrawObject = Object();
