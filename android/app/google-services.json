@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "802250430256",
+    "project_id": "tech-daily-8f9e1",
+    "storage_bucket": "tech-daily-8f9e1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:802250430256:android:70a9fff86d5b4e70841af5",
+        "android_client_info": {
+          "package_name": "com.sn.techdaily"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "802250430256-f5ju3tvg87040utejmadsvbdiknvte5k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sn.techdaily",
+            "certificate_hash": "5766582740096139f4b4093a9e80a6f5bc663e05"
+          }
+        },
+        {
+          "client_id": "802250430256-8c87dmobnerftcr19cdga8k7j2hv122k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtOu_Us5oFyyA9vBZpi1tISs3qDGaXk0c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "802250430256-8c87dmobnerftcr19cdga8k7j2hv122k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:techdaily/screens/conent_list_screen.dart';
-import 'package:simple_dark_mode_webview/hexColor.dart';
-import 'package:simple_dark_mode_webview/simpledarkmodewebview.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:page_transition/page_transition.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,11 +11,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Daily Techs',
-      // darkTheme: ThemeData(
-      //   brightness: Brightness.dark,
-      //   primarySwatch: Colors.blue,
-      // ),
-      home: ContentListScreen(),
+      home: AnimatedSplashScreen(
+        duration: 2500,
+        splash: 'assets/images/techlogo.png',
+        nextScreen: ContentListScreen(),
+        splashTransition: SplashTransition.fadeTransition,
+        pageTransitionType: PageTransitionType.rightToLeft,
+        backgroundColor: Colors.black,
+      ),
     );
   }
 }

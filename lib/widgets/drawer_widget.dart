@@ -34,7 +34,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     itemLabel: 'About Us', iconData: Icons.open_in_new_sharp,
                 onClicked: ()=>selectedItem(context, 1)),
                 buildMenuItem(
-                    itemLabel: 'Send Feedback', iconData: Icons.feedback_sharp),
+                    itemLabel: 'Send Suggestions', iconData: Icons.feedback_sharp),
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0, top: 8),
                   child: Row(

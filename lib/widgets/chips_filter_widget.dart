@@ -6,15 +6,16 @@ class ChipFilter extends StatefulWidget {
   final bool selectState;
   final Function onSelect, onUnselect;
   final int ownerId;
+  bool shouldSelect;
 
-  ChipFilter({this.ownerName, this.color, this.selectState,this.onSelect,this.onUnselect,this.ownerId});
+  ChipFilter({this.shouldSelect,this.ownerName, this.color, this.selectState,this.onSelect,this.onUnselect,this.ownerId});
 
   @override
   _ChipFilterState createState() => _ChipFilterState();
 }
 
 class _ChipFilterState extends State<ChipFilter> {
-  bool _isSelected = false;
+  // bool widgetshoudSelect = false;
   Function sortedList;
 
   @override
@@ -25,17 +26,17 @@ class _ChipFilterState extends State<ChipFilter> {
         child: FilterChip(
             label: Text(
               widget.ownerName,
-              style: TextStyle(fontSize: 14,color: _isSelected? Color.fromRGBO(35, 35, 35, 1):Color.fromRGBO(206, 206, 206, 1)),
+              style: TextStyle(fontSize: 14,color: widget.shouldSelect? Color.fromRGBO(35, 35, 35, 1):Color.fromRGBO(206, 206, 206, 1)),
             ),
             backgroundColor: Color.fromRGBO(34, 35, 34, 1),
-            selected: _isSelected,
+            selected: widget.shouldSelect,
             selectedColor: Colors.black12,
             onSelected: (isSelected) {
               // print(widget.owner);
               setState(() {
-                _isSelected = isSelected;
+                widget.shouldSelect = isSelected;
               });
-              _isSelected ? widget.onSelect() : widget.onUnselect();
+              widget.shouldSelect ? widget.onSelect() : widget.onUnselect();
             }),
       ),
     );
