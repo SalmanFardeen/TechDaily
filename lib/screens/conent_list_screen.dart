@@ -116,8 +116,8 @@ class _ContentListScreenState extends State<ContentListScreen> {
                                     img: allContents[index].imgUrl,
                                     uploadTime: allContents[index].pubDate,
                                     owner:
-                                        ownersMap[allContents[index].owner] ??
-                                            allContents[index].owner.toString(),
+                                        ownersMap[allContents[index].owner_id] ??
+                                            allContents[index].owner_id.toString(),
                                     url: allContents[index].url,
                                   );
                                 },
@@ -135,9 +135,9 @@ class _ContentListScreenState extends State<ContentListScreen> {
                                         uploadTime:
                                             sortedContents[index].pubDate,
                                         owner: ownersMap[
-                                                sortedContents[index].owner] ??
+                                                sortedContents[index].owner_id] ??
                                             sortedContents[index]
-                                                .owner
+                                                .owner_id
                                                 .toString(),
                                         url: sortedContents[index].url,
                                       );
@@ -172,7 +172,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
     setState(() {
       sortedContents = [];
       sortedContents.addAll(allContents.where((TechDailyContent content) {
-        return content.owner == currentOwner;
+        return content.owner_id == currentOwner;
       }));
       _isSorted = true;
     });

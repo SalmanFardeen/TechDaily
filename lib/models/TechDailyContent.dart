@@ -20,7 +20,7 @@ class TechDailyContent {
     this.imgUrl,
     this.createdAt,
     this.updatedAt,
-    this.owner,
+    this.owner_id,
   });
 
   int id;
@@ -31,7 +31,7 @@ class TechDailyContent {
   String imgUrl;
   DateTime createdAt;
   DateTime updatedAt;
-  int owner;
+  int owner_id;
 
   factory TechDailyContent.fromJson(Map<String, dynamic> json) => TechDailyContent(
         id: json["id"],
@@ -42,7 +42,7 @@ class TechDailyContent {
         imgUrl: json["img_url"],
         createdAt: DateTime.tryParse(json["created_at"]),
         updatedAt: DateTime.tryParse(json["updated_at"]),
-        owner: json["owner"],
+        owner_id: json["owner_id"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -54,6 +54,6 @@ class TechDailyContent {
         "img_url": imgUrl,
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
-        "owner": owner,
+        "owner_id": owner_id,
       };
 }
