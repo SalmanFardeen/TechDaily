@@ -177,13 +177,14 @@ class _ContentListScreenState extends State<ContentListScreen> {
       _isSorted = true;
     });
 
-    ApiManager()
-        .getContentsByOwner(ownerId)
+    ApiManager().getContentsByOwner(ownerId)
         .then((List<TechDailyContent> value) {
-      setState(() {
-        sortedContents = value;
-      });
-    });
+          if(ownerId==currentOwner) {
+            setState(() {
+              sortedContents = value;
+            });
+          }
+        });
   }
 
   void handleOnUnselect() {
