@@ -92,7 +92,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
 
                               setState(() {
                                 redrawObject = Object();
-                                recentOwner = owners[index].id;
+                                // recentOwner = owners[index].id;
                                 currentOwner = -1;
                               });
                               handleOnUnselect();
@@ -162,12 +162,12 @@ class _ContentListScreenState extends State<ContentListScreen> {
   void handleOnSelect(int ownerId) {
     print('selected chip ownerId: ' + ownerId.toString());
 
-    if(ownerId == recentOwner){
-      setState(() {
-        _isSorted = true;
-      });
-      return;
-    }
+    // if(ownerId == recentOwner){
+    //   setState(() {
+    //     _isSorted = true;
+    //   });
+    //   return;
+    // }
 
     setState(() {
       sortedContents = [];
