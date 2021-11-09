@@ -47,14 +47,17 @@ class ContentList extends StatelessWidget {
                     height: 120,
                     child: Text(
                       title,
-                      style: TextStyle(fontSize: 17, color: Colors.white),
+                      style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
                   SizedBox(height: 5),
                   uploadTime != null
                       ? Text(
-                          DateFormat.yMMMEd().format(uploadTime).toString(),
-                          style: TextStyle(fontSize: 12, color: Colors.white),
+                          DateFormat.MMMd().format(uploadTime).toString() +
+                              ', ' +
+                              DateFormat.jm().format(uploadTime)
+                          + DateFormat.m().format(uploadTime),
+                          style: TextStyle(fontSize: 13, color: Colors.white),
                         )
                       : Text(
                           uploadTime.toString(),
@@ -63,7 +66,7 @@ class ContentList extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(width: 20, height: 0),
+            SizedBox(width: 38, height: 0),
             Stack(
               children: [
                 ClipRRect(
@@ -71,7 +74,7 @@ class ContentList extends StatelessWidget {
                       topRight: Radius.circular(15),
                       bottomRight: Radius.circular(15)),
                   child: Image.network(img,
-                      height: 170, width: 169, fit: BoxFit.cover),
+                      height: 171, width: 150, fit: BoxFit.cover),
                 ),
                 Positioned.fill(
                   child: Align(
@@ -85,10 +88,10 @@ class ContentList extends StatelessWidget {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 6, horizontal: 11),
+                              vertical: 5, horizontal: 10),
                           child: Text(
                             owner,
-                            style: TextStyle(color: Colors.white, fontSize: 12),
+                            style: TextStyle(color: Colors.white, fontSize: 13),
                           ),
                         )),
                   ),

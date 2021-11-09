@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:techdaily/screens/drawer_about_us_screen.dart';
 import 'package:techdaily/screens/drawer_favorites_screen.dart';
 
@@ -91,6 +92,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
 
   Widget buildHeader({String imageUrl,String name,String userName,Function onClicked}){
+
     return InkWell(
       onTap: onClicked,
       child: Container(
@@ -105,6 +107,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       ),
     );
   }
+
 
   Future<void> selectedItem(BuildContext context, int index) async {
     switch (index) {
