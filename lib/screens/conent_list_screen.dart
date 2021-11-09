@@ -162,12 +162,13 @@ class _ContentListScreenState extends State<ContentListScreen> {
   void handleOnSelect(int ownerId) {
     print('selected chip ownerId: ' + ownerId.toString());
 
-    // if(ownerId == recentOwner)  {
+    // if(ownerId == recentOwner){
     //   setState(() {
     //     _isSorted = true;
     //   });
     //   return;
     // }
+
     setState(() {
       sortedContents = [];
       sortedContents.addAll(allContents.where((TechDailyContent content) {
