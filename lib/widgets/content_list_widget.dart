@@ -44,7 +44,7 @@ class ContentList extends StatelessWidget {
                 children: [
                   Container(
                     width: MediaQuery.of(context).size.width * .4,
-                    height: 120,
+                    height: 100,
                     child: Text(
                       title,
                       style: TextStyle(fontSize: 18, color: Colors.white),
