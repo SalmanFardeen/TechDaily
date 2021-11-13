@@ -29,6 +29,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
   Map<int, String> ownersMap = {};
 
   ScrollController _scrollController = ScrollController();
+  int pageNumber = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +107,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                         ? Center(child: CircularProgressIndicator())
                         : !_isSorted
                             ? ListView.builder(
+                                controller: _scrollController,
                                 physics: NeverScrollableScrollPhysics(),
                                 padding: EdgeInsets.only(top: 10),
                                 shrinkWrap: true,
@@ -192,9 +194,18 @@ class _ContentListScreenState extends State<ContentListScreen> {
     // _scrollController.jumpTo(_scrollController.position.minScrollExtent);
   }
 
+  void getMoreContents(){
+    ApiManager().getContents(pageNumber).then((List<TechDailyContent> value) {
+      setState(() {
+        allContents.addAll(value);
+        pageNumber += 1;
+      });
+    });
+  }
+
   @override
   void initState() {
-    ApiManager().getContents().then((List<TechDailyContent> value) {
+    ApiManager().getContents(pageNumber).then((List<TechDailyContent> value) {
       setState(() {
         allContents = value;
       });
@@ -211,6 +222,18 @@ class _ContentListScreenState extends State<ContentListScreen> {
 
         _isLoading = false;
       });
+    });
+
+    // Setup the listener.
+    _scrollController.addListener(() {
+      if (_scrollController.position.atEdge) {
+        if (_scrollController.position.pixels == 0) {
+          // You're at the top.
+        } else {
+          // You're at the bottom.
+          getMoreContents();
+        }
+      }
     });
 
     super.initState();

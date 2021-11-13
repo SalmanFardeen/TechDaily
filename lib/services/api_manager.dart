@@ -6,12 +6,12 @@ import 'package:techdaily/models/TechDailyContent.dart';
 import 'package:techdaily/models/api_owner_model.dart';
 
 class ApiManager {
-  Future<List<TechDailyContent>> getContents() async {
+  Future<List<TechDailyContent>> getContents(int pageNumber) async {
     var client = http.Client();
 
     try {
       var response = await client
-          .get(Uri.parse('https://techdailyapi.herokuapp.com/contents/'));
+          .get(Uri.parse('https://techdailyapi.herokuapp.com/contents/?page='+pageNumber.toString()));
 
       if (response.statusCode == 200) {
         print("'/contents' endpoint statusCode: 200");
