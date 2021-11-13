@@ -28,7 +28,9 @@ class _ContentListScreenState extends State<ContentListScreen> {
   List<TechDailyOwner> owners = [];
   Map<int, String> ownersMap = {};
 
-  ScrollController _scrollController = ScrollController();
+  ScrollController _fullController = ScrollController();
+  ScrollController _contentController = ScrollController();
+
   int pageNumber = 1;
 
   @override
@@ -40,7 +42,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
       backgroundColor: Colors.black87,
       body: SafeArea(
         child: CustomScrollView(
-          controller: _scrollController,
+          controller: _fullController,
           slivers: [
             SliverAppBar(
               backgroundColor: Colors.black,
@@ -107,7 +109,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                         ? Center(child: CircularProgressIndicator())
                         : !_isSorted
                             ? ListView.builder(
-                                controller: _scrollController,
+                                controller: _contentController,
                                 physics: NeverScrollableScrollPhysics(),
                                 padding: EdgeInsets.only(top: 10),
                                 shrinkWrap: true,
@@ -189,7 +191,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
 
   void _scrollToTop() {
     print('Trying to scroll.....');
-    _scrollController.animateTo(0.0,
+    _fullController.animateTo(0.0,
         duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
     // _scrollController.jumpTo(_scrollController.position.minScrollExtent);
   }
@@ -225,12 +227,13 @@ class _ContentListScreenState extends State<ContentListScreen> {
     });
 
     // Setup the listener.
-    _scrollController.addListener(() {
-      if (_scrollController.position.atEdge) {
-        if (_scrollController.position.pixels == 0) {
+    _contentController.addListener(() {
+      if (_contentController.position.atEdge) {
+        if (_contentController.position.pixels == 0) {
           // You're at the top.
         } else {
           // You're at the bottom.
+          print('eitto eshe gechi');
           getMoreContents();
         }
       }
