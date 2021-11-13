@@ -44,25 +44,31 @@ class ContentList extends StatelessWidget {
                 children: [
                   Container(
                     width: MediaQuery.of(context).size.width * .4,
-                    height: 100,
+                    height: 110,
                     child: Text(
                       title,
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
-                  SizedBox(height: 5),
-                  uploadTime != null
-                      ? Text(
-                          DateFormat.MMMd().format(uploadTime).toString() +
-                              ', ' +
-                              DateFormat.jm().format(uploadTime)
-                          + DateFormat.m().format(uploadTime),
-                          style: TextStyle(fontSize: 13, color: Colors.white),
-                        )
-                      : Text(
-                          uploadTime.toString(),
-                          style: TextStyle(fontSize: 13, color: Colors.white),
-                        ),
+                  Container(
+                    height: 40,
+                    child: Center(
+                      child: uploadTime != null
+                          ? Text(
+                              DateFormat.MMMd().format(uploadTime).toString() +
+                                  ', ' +
+                                  DateFormat.jm().format(uploadTime) +
+                                  DateFormat.m().format(uploadTime),
+                              style:
+                                  TextStyle(fontSize: 13, color: Colors.white),
+                            )
+                          : Text(
+                              uploadTime.toString(),
+                              style:
+                                  TextStyle(fontSize: 13, color: Colors.white),
+                            ),
+                    ),
+                  )
                 ],
               ),
             ),

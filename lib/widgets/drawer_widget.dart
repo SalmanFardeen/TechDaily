@@ -13,14 +13,15 @@ class DrawerWidget extends StatefulWidget {
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
+
   bool _isSwitched = false;
-  final user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<Object>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
+
           return Theme(
             data: Theme.of(context)
                 .copyWith(canvasColor: Color.fromRGBO(35, 34, 34, 1)),
@@ -32,9 +33,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     children: [
                       buildHeader(
                           login: snapshot.hasData ? true : false,
-                          name: snapshot.hasData ? user.displayName : 'Log In',
+                          name: snapshot.hasData ?
+                          FirebaseAuth.instance.currentUser.displayName : 'Log In',
                           imageUrl: snapshot.hasData
-                              ? user.photoURL
+                              ? FirebaseAuth.instance.currentUser.photoURL
                               : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'),
                       buildMenuItem(
                         itemLabel: 'Favorites',
@@ -117,6 +119,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         // final provider = context.read<FirebaseSignIn>();
         final provider = Provider.of<FirebaseSignIn>(context, listen: false);
         login ? openDialog() : provider.googleLogin();
+
       },
       child: Container(
           padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
@@ -150,6 +153,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     );
   }
 
+
+
   Future openDialog() => showDialog(
         context: context,
         barrierDismissible: true,
@@ -157,8 +162,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           backgroundColor: Color.fromRGBO(40, 40, 40, 1),
           elevation: 3,
           title: Text(
-            'Logout?',
-            style: TextStyle(color: Colors.white),
+            'Do you want to logout?',
+            style: TextStyle(color: Colors.white,fontSize: 18),
           ),
           actions: [
             TextButton(

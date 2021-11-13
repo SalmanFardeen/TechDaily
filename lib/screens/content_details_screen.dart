@@ -24,6 +24,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ContentDetails extends StatefulWidget {
   final String url;
@@ -37,7 +38,11 @@ class _ContentDetailsState extends State<ContentDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('TechDaily'),backgroundColor: Colors.black),
+      appBar: AppBar(title: Text('TechDaily'),backgroundColor: Colors.black,
+      actions: [
+        IconButton(onPressed: ()=>Share.share(widget.url), icon: Icon(Icons.share))
+      ],
+      ),
       body: WebviewScaffold(
         url: widget.url,
         withZoom: true,
