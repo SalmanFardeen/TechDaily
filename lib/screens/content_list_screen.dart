@@ -29,7 +29,6 @@ class _ContentListScreenState extends State<ContentListScreen> {
   Map<int, String> ownersMap = {};
 
   ScrollController _fullController = ScrollController();
-  ScrollController _contentController = ScrollController();
 
   int pageNumber = 1;
 
@@ -109,7 +108,6 @@ class _ContentListScreenState extends State<ContentListScreen> {
                         ? Center(child: CircularProgressIndicator())
                         : !_isSorted
                             ? ListView.builder(
-                                controller: _contentController,
                                 physics: NeverScrollableScrollPhysics(),
                                 padding: EdgeInsets.only(top: 10),
                                 shrinkWrap: true,
@@ -227,9 +225,9 @@ class _ContentListScreenState extends State<ContentListScreen> {
     });
 
     // Setup the listener.
-    _contentController.addListener(() {
-      if (_contentController.position.atEdge) {
-        if (_contentController.position.pixels == 0) {
+    _fullController.addListener(() {
+      if (_fullController.position.atEdge) {
+        if (_fullController.position.pixels == 0) {
           // You're at the top.
         } else {
           // You're at the bottom.
