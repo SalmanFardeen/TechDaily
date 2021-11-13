@@ -10,47 +10,51 @@ class ApiManager {
     var client = http.Client();
 
     try {
-
-      var response = await client.get( Uri.parse('https://techdailyapi.herokuapp.com/contents/'));
+      var response = await client
+          .get(Uri.parse('https://techdailyapi.herokuapp.com/contents/'));
 
       if (response.statusCode == 200) {
         print("'/contents' endpoint statusCode: 200");
         var jsonString = response.body;
-        List jsonMap = json.decode(jsonString);
-        print("fetched 'contents' list length: " + jsonMap.length.toString());
-       return  jsonMap.map((content) => TechDailyContent.fromJson(content)).toList();
 
+        Map<String, dynamic> jsonMap = json.decode(jsonString);
+        // print(jsonMap['results']);
+
+        List results = jsonMap['results'];
+        print(results);
+        //print("fetched 'contents' list length: " + results.length.toString());
+
+        return results
+            .map((content) => TechDailyContent.fromJson(content))
+            .toList();
       }
     } catch (e) {
-      print('error:'+e.toString());
+      print('error:' + e.toString());
     }
     return null;
   }
 
-
-
- //Fetch owners lists
-  Future <List<TechDailyOwner>> getOwners() async {
+  //Fetch owners lists
+  Future<List<TechDailyOwner>> getOwners() async {
     var client = http.Client();
 
     try {
-      var response = await client.get(
-          Uri.parse('https://techdailyapi.herokuapp.com/owners/'));
+      var response = await client
+          .get(Uri.parse('https://techdailyapi.herokuapp.com/owners/'));
 
       if (response.statusCode == 200) {
         print("'/owners' endpoint statusCode: 200");
         var jsonStrings = response.body;
         List jsonMap = json.decode(jsonStrings);
+        print(jsonMap);
         print("fetched 'owners' list length: " + jsonMap.length.toString());
-        return jsonMap.map((owner) =>TechDailyOwner.fromJson(owner)).toList();
+        return jsonMap.map((owner) => TechDailyOwner.fromJson(owner)).toList();
       }
-    }
-    catch(e){
-      print('error: '+e);
+    } catch (e) {
+      print('error: ' + e);
     }
     return null;
   }
-
 
   //sort by ownerId
 
@@ -58,19 +62,22 @@ class ApiManager {
     var client = http.Client();
 
     try {
-
-      var response = await client.get( Uri.parse('http://techdailyapi.herokuapp.com/contents/search/owner_id/'+ownerId.toString()));
+      var response = await client.get(Uri.parse(
+          'http://techdailyapi.herokuapp.com/contents/search/owner_id/' +
+              ownerId.toString()));
 
       if (response.statusCode == 200) {
-        print("'/contents/search/owner_id/\$owner_id' endpoint statusCode: 200");
+        print(
+            "'/contents/search/owner_id/\$owner_id' endpoint statusCode: 200");
         var jsonString = response.body;
         List jsonMap = json.decode(jsonString);
         print("fetched 'contents' list length: " + jsonMap.length.toString());
-        return  jsonMap.map((content) => TechDailyContent.fromJson(content)).toList();
-
+        return jsonMap
+            .map((content) => TechDailyContent.fromJson(content))
+            .toList();
       }
     } catch (e) {
-      print('error:'+e.toString());
+      print('error:' + e.toString());
     }
     return null;
   }

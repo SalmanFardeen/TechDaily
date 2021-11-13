@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:techdaily/screens/drawer_about_us_screen.dart';
 import 'package:techdaily/screens/drawer_favorites_screen.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:techdaily/services/firebase_signin.dart';
 

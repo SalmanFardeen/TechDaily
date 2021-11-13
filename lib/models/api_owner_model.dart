@@ -1,6 +1,4 @@
-// To parse this JSON data, do
-//
-//     final techDailyOwner = techDailyOwnerFromJson(jsonString);
+
 
 import 'dart:convert';
 

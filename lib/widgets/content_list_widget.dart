@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:techdaily/screens/content_details_screen.dart';
+import 'package:techdaily/screens/content_details_webview_screen.dart';
 import 'package:intl/intl.dart';
 
 class ContentList extends StatelessWidget {
@@ -16,7 +16,7 @@ class ContentList extends StatelessWidget {
     Navigator.of(ctx).push(
       MaterialPageRoute(
         builder: (_) {
-          return ContentDetails(url: url);
+          return ContentDetailsWebview(url: url);
         },
       ),
     );
@@ -56,9 +56,10 @@ class ContentList extends StatelessWidget {
                       child: uploadTime != null
                           ? Text(
                               DateFormat.MMMd().format(uploadTime).toString() +
-                                  ', ' +
-                                  DateFormat.jm().format(uploadTime) +
-                                  DateFormat.m().format(uploadTime),
+                                  ' - ' +
+                                  // DateFormat('yy').format(uploadTime) +
+                                  DateFormat.jm().format(uploadTime),
+
                               style:
                                   TextStyle(fontSize: 13, color: Colors.white),
                             )
