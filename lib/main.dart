@@ -21,15 +21,15 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Daily Techs',
-        // home: ContentListScreen(),
-        home: AnimatedSplashScreen(
-          duration: 2500,
-          splash: 'assets/images/techlogo.png',
-          nextScreen: ContentListScreen(),
-          splashTransition: SplashTransition.fadeTransition,
-          pageTransitionType: PageTransitionType.rightToLeft,
-          backgroundColor: Colors.black,
-        ),
+        home: ContentListScreen(),
+        // home: AnimatedSplashScreen(
+        //   duration: 2500,
+        //   splash: 'assets/images/techlogo.png',
+        //   nextScreen: ContentListScreen(),
+        //   splashTransition: SplashTransition.fadeTransition,
+        //   pageTransitionType: PageTransitionType.rightToLeft,
+        //   backgroundColor: Colors.black,
+        // ),
       ),
     );
   }

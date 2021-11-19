@@ -3,7 +3,7 @@ import 'package:techdaily/screens/content_details_webview_screen.dart';
 import 'package:intl/intl.dart';
 
 class ContentList extends StatelessWidget {
-  final String id;
+  final int id;
   final String title;
   final String img;
   final DateTime uploadTime;
@@ -16,11 +16,15 @@ class ContentList extends StatelessWidget {
     Navigator.of(ctx).push(
       MaterialPageRoute(
         builder: (_) {
-          return ContentDetailsWebview(url: url);
+          return ContentDetailsWebview(url: url,id: id);
         },
       ),
     );
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {

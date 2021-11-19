@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:techdaily/models/TechDailyContent.dart';
 import 'package:techdaily/models/api_owner_model.dart';
+import 'package:techdaily/screens/search_screen.dart';
 import 'package:techdaily/services/api_manager.dart';
+import 'package:techdaily/services/firebase_manager.dart';
 import 'package:techdaily/widgets/chips_filter_widget.dart';
 import 'package:techdaily/widgets/content_list_widget.dart';
 import 'package:techdaily/widgets/drawer_widget.dart';
@@ -16,17 +20,18 @@ class ContentListScreen extends StatefulWidget {
 class _ContentListScreenState extends State<ContentListScreen> {
   bool _isSorted = false;
   bool _isLoading = true;
-  //List<String> chipsLabels = [];
   int currentOwner;
   int recentOwner;
   Object redrawObject;
 
-  //bool shouldSort = false;
   List<TechDailyContent> allContents = [];
   List<TechDailyContent> sortedContents = [];
 
   List<TechDailyOwner> owners = [];
   Map<int, String> ownersMap = {};
+
+  List contentTitles = [];
+
 
   ScrollController _fullController = ScrollController();
 
@@ -35,127 +40,148 @@ class _ContentListScreenState extends State<ContentListScreen> {
   @override
   Widget build(BuildContext context) {
     print("'ContentListScreen' Widget building");
-    return Scaffold(
-      // key: _scaffoldKey,
-      drawer: DrawerWidget(),
-      backgroundColor: Colors.black87,
-      body: SafeArea(
-        child: CustomScrollView(
-          controller: _fullController,
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Colors.black,
-              floating: true,
-              leading: Builder(builder: (context) {
-                return IconButton(
-                  icon: Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                );
-              }),
-              title: Container(
-                margin: EdgeInsets.only(right: 35),
-                child: Transform.scale(
-                  scale: .60,
-                  child: GestureDetector(
-                      onTap: () => _scrollToTop(),
-                      child: Image.asset('assets/images/techlogo.png')),
+    return RefreshIndicator(
+      onRefresh: refreshContents,
+      child: Scaffold(
+        // key: _scaffoldKey,
+        drawer: DrawerWidget(),
+        backgroundColor: Colors.black87,
+        body: SafeArea(
+          child: CustomScrollView(
+            controller: _fullController,
+            slivers: [
+              SliverAppBar(
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: IconButton(
+                        onPressed: () => showSearch(
+                            context: context, delegate: SearchScreen(allContents)),
+                        icon: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                        )),
+                  )
+                ],
+                backgroundColor: Colors.black,
+                floating: true,
+                leading: Builder(builder: (context) {
+                  return IconButton(
+                    icon: Icon(Icons.menu),
+                    onPressed: () => Scaffold.of(context).openDrawer(),
+                  );
+                }),
+                title: Container(
+                  margin: EdgeInsets.only(right: 0, left: 15),
+                  child: Transform.scale(
+                    scale: .70,
+                    child: GestureDetector(
+                        onTap: () => _scrollToTop(),
+                        child: Image.asset('assets/images/techlogo.png')),
+                  ),
                 ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 60,
-                      padding: EdgeInsets.only(left: 6, top: 30),
-                      child: ListView.builder(
-                        key: ValueKey<Object>(redrawObject),
-                        shrinkWrap: true,
-                        itemCount: owners.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return ChipFilter(
-                            // ownerId: owners[index].id,
-                            ownerName: owners[index].name,
-                            shouldSelect:
-                                currentOwner == owners[index].id ? true : false,
-                            onSelect: () {
-                              setState(() {
-                                currentOwner = owners[index].id;
-                                redrawObject = Object();
-                              });
+              SliverToBoxAdapter(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        height: 60,
+                        padding: EdgeInsets.only(left: 6, top: 30),
+                        child: ListView.builder(
+                          key: ValueKey<Object>(redrawObject),
+                          shrinkWrap: true,
+                          itemCount: owners.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return ChipFilter(
+                              ownerName: owners[index].name,
+                              shouldSelect: currentOwner == owners[index].id
+                                  ? true
+                                  : false,
+                              onSelect: () {
+                                setState(() {
+                                  currentOwner = owners[index].id;
+                                  redrawObject = Object();
+                                });
 
-                              handleOnSelect(owners[index].id);
-                            },
-                            onUnselect: () {
-                              print('unselected chip ownerId: ' + owners[index].id.toString());
+                                handleOnSelect(owners[index].id);
+                              },
+                              onUnselect: () {
+                                print('unselected chip ownerId: ' +
+                                    owners[index].id.toString());
 
-                              setState(() {
-                                redrawObject = Object();
-                                // recentOwner = owners[index].id;
-                                currentOwner = -1;
-                              });
-                              handleOnUnselect();
-                            },
-                          );
-                        },
+                                setState(() {
+                                  redrawObject = Object();
+                                  // recentOwner = owners[index].id;
+                                  currentOwner = -1;
+                                });
+                                handleOnUnselect();
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    _isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : !_isSorted
-                            ? ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.only(top: 10),
-                                shrinkWrap: true,
-                                itemCount: allContents.length,
-                                itemBuilder: (context, index) {
-                                  return ContentList(
-                                    title: allContents[index].title,
-                                    img: allContents[index].imgUrl,
-                                    uploadTime: allContents[index].pubDate,
-                                    owner:
-                                        ownersMap[allContents[index].owner_id] ??
-                                            allContents[index].owner_id.toString(),
-                                    url: allContents[index].url,
-                                  );
-                                },
-                              )
-                            : _isSorted
-                                ? ListView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    padding: EdgeInsets.only(top: 10),
-                                    shrinkWrap: true,
-                                    itemCount: sortedContents.length,
-                                    itemBuilder: (context, index) {
-                                      return ContentList(
-                                        title: sortedContents[index].title,
-                                        img: sortedContents[index].imgUrl,
-                                        uploadTime:
-                                            sortedContents[index].pubDate,
-                                        owner: ownersMap[
-                                                sortedContents[index].owner_id] ??
-                                            sortedContents[index]
-                                                .owner_id
-                                                .toString(),
-                                        url: sortedContents[index].url,
-                                      );
-                                    },
-                                  )
-                                : Center(
-                                    child: Text(
-                                      'No Data',
-                                      style: TextStyle(color: Colors.white),
+                      SizedBox(height: 20),
+                      _isLoading
+                          ? Container(
+                              child: Center(child: CircularProgressIndicator()),
+                            )
+                          : !_isSorted
+                              ? ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  padding: EdgeInsets.only(top: 10),
+                                  shrinkWrap: true,
+                                  itemCount: allContents.length,
+                                  itemBuilder: (context, index) {
+                                    return ContentList(
+                                      title: allContents[index].title,
+                                      img: allContents[index].imgUrl,
+                                      uploadTime: allContents[index].pubDate,
+                                      id: allContents[index].id,
+                                      owner: ownersMap[
+                                              allContents[index].owner_id] ??
+                                          allContents[index]
+                                              .owner_id
+                                              .toString(),
+                                      url: allContents[index].url,
+                                    );
+                                  },
+                                )
+                              : _isSorted
+                                  ? ListView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      padding: EdgeInsets.only(top: 10),
+                                      shrinkWrap: true,
+                                      itemCount: sortedContents.length,
+                                      itemBuilder: (context, index) {
+                                        return ContentList(
+                                          title: sortedContents[index].title,
+                                          img: sortedContents[index].imgUrl,
+                                          uploadTime:
+                                              sortedContents[index].pubDate,
+                                          owner: ownersMap[sortedContents[index]
+                                                  .owner_id] ??
+                                              sortedContents[index]
+                                                  .owner_id
+                                                  .toString(),
+                                          url: sortedContents[index].url,
+                                        );
+                                      },
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        'No Data',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
-                                  ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -171,14 +197,15 @@ class _ContentListScreenState extends State<ContentListScreen> {
       _isSorted = true;
     });
 
-    ApiManager().getContentsByOwner(ownerId)
+    ApiManager()
+        .getContentsByOwner(ownerId)
         .then((List<TechDailyContent> value) {
-          if(ownerId==currentOwner) {
-            setState(() {
-              sortedContents = value;
-            });
-          }
+      if (ownerId == currentOwner) {
+        setState(() {
+          sortedContents = value;
         });
+      }
+    });
   }
 
   void handleOnUnselect() {
@@ -194,11 +221,24 @@ class _ContentListScreenState extends State<ContentListScreen> {
     // _scrollController.jumpTo(_scrollController.position.minScrollExtent);
   }
 
-  void getMoreContents(){
+  void getMoreContents() {
     ApiManager().getContents(pageNumber).then((List<TechDailyContent> value) {
       setState(() {
         allContents.addAll(value);
         pageNumber += 1;
+      });
+    });
+  }
+
+  Future<void> refreshContents() async {
+    setState(() {
+      _isLoading = true;
+    });
+    ApiManager().getContents(1).then((List<TechDailyContent> value) {
+      setState(() {
+        allContents = value;
+        _isLoading = false;
+        pageNumber = 2;
       });
     });
   }
@@ -208,6 +248,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
     ApiManager().getContents(pageNumber).then((List<TechDailyContent> value) {
       setState(() {
         allContents = value;
+        pageNumber++;
       });
     });
 
@@ -239,4 +280,8 @@ class _ContentListScreenState extends State<ContentListScreen> {
 
     super.initState();
   }
+
+
+
+
 }

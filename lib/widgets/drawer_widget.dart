@@ -13,6 +13,8 @@ class DrawerWidget extends StatefulWidget {
 
 class _DrawerWidgetState extends State<DrawerWidget> {
 
+
+
   bool _isSwitched = false;
 
   @override
@@ -20,7 +22,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return StreamBuilder<Object>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-
           return Theme(
             data: Theme.of(context)
                 .copyWith(canvasColor: Color.fromRGBO(35, 34, 34, 1)),
@@ -118,7 +119,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         // final provider = context.read<FirebaseSignIn>();
         final provider = Provider.of<FirebaseSignIn>(context, listen: false);
         login ? openDialog() : provider.googleLogin();
-
       },
       child: Container(
           padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
