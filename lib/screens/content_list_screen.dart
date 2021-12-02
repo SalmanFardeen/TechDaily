@@ -36,6 +36,8 @@ class _ContentListScreenState extends State<ContentListScreen> {
   ScrollController _fullController = ScrollController();
 
   int pageNumber = 1;
+  int pageNumberOwner = 1;
+  int _ownerId;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
                     padding: const EdgeInsets.only(left: 10),
                     child: IconButton(
                         onPressed: () => showSearch(
-                            context: context, delegate: SearchScreen(allContents)),
+                            context: context, delegate: SearchScreen(allContents,ownersMap)),
                         icon: Icon(
                           Icons.search,
                           color: Colors.white,
@@ -195,10 +197,19 @@ class _ContentListScreenState extends State<ContentListScreen> {
         return content.owner_id == currentOwner;
       }));
       _isSorted = true;
+
+      _ownerId = ownerId;
+
     });
 
+    getSortedContents(ownerId);
+
+  }
+
+  void getSortedContents(ownerId){
+
     ApiManager()
-        .getContentsByOwner(ownerId)
+        .getContentsByOwner(ownerId,pageNumberOwner)
         .then((List<TechDailyContent> value) {
       if (ownerId == currentOwner) {
         setState(() {
@@ -225,6 +236,16 @@ class _ContentListScreenState extends State<ContentListScreen> {
     ApiManager().getContents(pageNumber).then((List<TechDailyContent> value) {
       setState(() {
         allContents.addAll(value);
+        pageNumber += 1;
+      });
+    });
+  }
+
+  void getMoreSortedContents(int ownerId) {
+    print(ownerId);
+    ApiManager().getContentsByOwner(ownerId,pageNumber).then((List<TechDailyContent> value) {
+      setState(() {
+        sortedContents.addAll(value);
         pageNumber += 1;
       });
     });
@@ -273,6 +294,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
         } else {
           // You're at the bottom.
           print('eitto eshe gechi');
+          _isSorted?getMoreSortedContents(_ownerId):
           getMoreContents();
         }
       }

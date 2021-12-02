@@ -58,21 +58,30 @@ class ApiManager {
 
   //sort by ownerId
 
-  Future<List<TechDailyContent>> getContentsByOwner(int ownerId) async {
+  Future<List<TechDailyContent>> getContentsByOwner(int ownerId,int pageNumber) async {
+
     var client = http.Client();
 
     try {
       var response = await client.get(Uri.parse(
-          'http://techdailyapi.herokuapp.com/contents/search/owner_id/' +
-              ownerId.toString()));
+          'http://techdailyapi.herokuapp.com/contents/search/owner_id/'+
+              ownerId.toString()+'?page=' + pageNumber.toString()));
 
       if (response.statusCode == 200) {
         print(
             "'/contents/search/owner_id/\$owner_id' endpoint statusCode: 200");
         var jsonString = response.body;
-        List jsonMap = json.decode(jsonString);
-        print("fetched 'contents' list length: " + jsonMap.length.toString());
-        return jsonMap
+
+        Map<String, dynamic> jsonMap = json.decode(jsonString);
+
+        List results = jsonMap['results'];
+
+        // List jsonMap = json.decode(jsonString);
+
+
+        // print("fetched 'contents' list length: " + jsonMap.length.toString());
+
+        return results
             .map((content) => TechDailyContent.fromJson(content))
             .toList();
       }

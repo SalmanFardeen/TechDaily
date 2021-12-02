@@ -7,11 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:techdaily/models/TechDailyContent.dart';
 import 'package:techdaily/services/firebase_manager.dart';
 import 'package:http/http.dart' as http;
+import 'package:techdaily/widgets/content_list_widget.dart';
 
 class SearchScreen extends SearchDelegate<String> {
+  List<TechDailyContent> searchedContents;
+
   List<TechDailyContent> contentTitles;
 
-  SearchScreen(this.contentTitles);
+  Map<int, String> _ownersMap = {};
+
+  SearchScreen(this.contentTitles,this._ownersMap);
 
   // AnimationController controller;
 
@@ -51,9 +56,28 @@ class SearchScreen extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    if (query.isNotEmpty) addToRecentSearches();
-    return Container(
-      child: Center(child: Text(query)),
+    query.isNotEmpty?addToRecentSearches():null;
+
+    // query.isEmpty? ListView.builder(itemBuilder: ):
+
+    ListView.builder(
+      itemBuilder: (context, index){
+        return ContentList(
+          title: searchedContents[index].title,
+          img: searchedContents[index].imgUrl,
+          uploadTime: searchedContents[index].pubDate,
+          id: searchedContents[index].id,
+          owner: _ownersMap[
+          searchedContents[index].owner_id] ??
+              searchedContents[index]
+                  .owner_id
+                  .toString(),
+          url: searchedContents[index].url,
+        );
+      },
+      itemCount: searchedContents.length,
+
+
     );
   }
 
@@ -71,22 +95,21 @@ class SearchScreen extends SearchDelegate<String> {
             .collection("recent-searches")
             .get()
             .then((value) {
-          print('value: '+value.docs.toString());
+          print('value: ' + value.docs.toString());
           value.docs.forEach((element) {
-            print('element '+element.data()['search']);
+            print('element ' + element.data()['search']);
             recentSearches.add(element.data()['search']);
           });
-           print(recentSearches.length);
+          print(recentSearches.length);
         });
 
         return recentSearches;
-
       }
 
       return FutureBuilder(
           future: getRecentSearches(),
           builder: (context, snapshot) {
-            print('snapshot '+snapshot.data.toString());
+            print('snapshot ' + snapshot.data.toString());
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CupertinoActivityIndicator());
             }
@@ -97,7 +120,8 @@ class SearchScreen extends SearchDelegate<String> {
             final suggestionList = snapshot.data;
             return ListView.builder(
               itemBuilder: (context, index) => ListTile(
-                onTap: () => showResults(context),
+                onTap: (){ showResults(context);
+                query = suggestionList[index];},
                 leading: Icon(
                   Icons.history,
                   color: Colors.white,
@@ -107,14 +131,13 @@ class SearchScreen extends SearchDelegate<String> {
               itemCount: suggestionList.length,
             );
           });
-    }
-
-    else{
+    } else {
       Future<List<TechDailyContent>> getContentTitles(String queryTitle) async {
         var client = http.Client();
         try {
-          var response = await client
-              .get(Uri.parse('https://techdailyapi.herokuapp.com/contents/search/title/'+queryTitle));
+          var response = await client.get(Uri.parse(
+              'https://techdailyapi.herokuapp.com/contents/search/title/' +
+                  queryTitle));
 
           if (response.statusCode == 200) {
             print("'/contents' endpoint statusCode: 200");
@@ -140,7 +163,6 @@ class SearchScreen extends SearchDelegate<String> {
       return FutureBuilder(
           future: getContentTitles(query),
           builder: (context, snapshot) {
-
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CupertinoActivityIndicator());
             }
@@ -149,6 +171,12 @@ class SearchScreen extends SearchDelegate<String> {
             }
 
             final List<TechDailyContent> suggestionList = snapshot.data;
+            searchedContents = snapshot.data;
+            List<String> titleList = [];
+            suggestionList.forEach((element) {
+              titleList.add(query);
+            });
+
             return ListView.builder(
               itemBuilder: (context, index) => ListTile(
                 onTap: () => showResults(context),
@@ -156,7 +184,7 @@ class SearchScreen extends SearchDelegate<String> {
                   Icons.search,
                   color: Colors.white,
                 ),
-                title: Text(suggestionList[index].title),
+                title: Text(titleList[index]),
               ),
               itemCount: suggestionList.length,
             );
