@@ -5,6 +5,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:techdaily/services/firebase_signin.dart';
+import 'package:techdaily/widgets/shimmer_widget_home.dart';
 
 void main() async {
     WidgetsFlutterBinding.ensureInitialized();

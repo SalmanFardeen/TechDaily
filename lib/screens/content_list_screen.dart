@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -7,10 +5,11 @@ import 'package:techdaily/models/TechDailyContent.dart';
 import 'package:techdaily/models/api_owner_model.dart';
 import 'package:techdaily/screens/search_screen.dart';
 import 'package:techdaily/services/api_manager.dart';
-import 'package:techdaily/services/firebase_manager.dart';
 import 'package:techdaily/widgets/chips_filter_widget.dart';
 import 'package:techdaily/widgets/content_list_widget.dart';
 import 'package:techdaily/widgets/drawer_widget.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:techdaily/widgets/shimmer_widget_home.dart';
 
 class ContentListScreen extends StatefulWidget {
   @override
@@ -20,6 +19,8 @@ class ContentListScreen extends StatefulWidget {
 class _ContentListScreenState extends State<ContentListScreen> {
   bool _isSorted = false;
   bool _isLoading = true;
+  bool _isLoadingNewCont = false;
+
   int currentOwner;
   int recentOwner;
   Object redrawObject;
@@ -31,7 +32,6 @@ class _ContentListScreenState extends State<ContentListScreen> {
   Map<int, String> ownersMap = {};
 
   List contentTitles = [];
-
 
   ScrollController _fullController = ScrollController();
 
@@ -47,7 +47,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
       child: Scaffold(
         // key: _scaffoldKey,
         drawer: DrawerWidget(),
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
         body: SafeArea(
           child: CustomScrollView(
             controller: _fullController,
@@ -58,7 +58,8 @@ class _ContentListScreenState extends State<ContentListScreen> {
                     padding: const EdgeInsets.only(left: 10),
                     child: IconButton(
                         onPressed: () => showSearch(
-                            context: context, delegate: SearchScreen(allContents,ownersMap)),
+                            context: context,
+                            delegate: SearchScreen(allContents, ownersMap)),
                         icon: Icon(
                           Icons.search,
                           color: Colors.white,
@@ -85,7 +86,7 @@ class _ContentListScreenState extends State<ContentListScreen> {
               ),
               SliverToBoxAdapter(
                 child: SingleChildScrollView(
-                  child: Column(
+                  child:_isLoading?Container(height: 1000,child: ShimmerHome(),): Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
@@ -126,58 +127,83 @@ class _ContentListScreenState extends State<ContentListScreen> {
                         ),
                       ),
                       SizedBox(height: 20),
-                      _isLoading
-                          ? Container(
-                              child: Center(child: CircularProgressIndicator()),
-                            )
-                          : !_isSorted
-                              ? ListView.builder(
+                      //   _isLoading?
+                      // // Container(height: 1000,child: ShimmerHome())
+                      //        Container(
+                      //       child: Center(child: CircularProgressIndicator()),
+                      //         )
+                      //       :
+                      !_isSorted
+                          ? Column(
+                              children: [
+                                ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
                                   padding: EdgeInsets.only(top: 10),
                                   shrinkWrap: true,
                                   itemCount: allContents.length,
                                   itemBuilder: (context, index) {
-                                    return ContentList(
-                                      title: allContents[index].title,
-                                      img: allContents[index].imgUrl,
-                                      uploadTime: allContents[index].pubDate,
-                                      id: allContents[index].id,
-                                      owner: ownersMap[
-                                              allContents[index].owner_id] ??
-                                          allContents[index]
-                                              .owner_id
-                                              .toString(),
-                                      url: allContents[index].url,
+                                    return Column(
+                                      children: [
+                                        ContentList(
+                                          title: allContents[index].title,
+                                          img: allContents[index].imgUrl,
+                                          uploadTime:
+                                              allContents[index].pubDate,
+                                          id: allContents[index].id,
+                                          owner: ownersMap[allContents[index]
+                                                  .owner_id] ??
+                                              allContents[index]
+                                                  .owner_id
+                                                  .toString(),
+                                          url: allContents[index].url,
+                                        ),
+                                      ],
                                     );
                                   },
-                                )
-                              : _isSorted
-                                  ? ListView.builder(
+                                ),
+                                if (_isLoadingNewCont)
+                                  Center(child: CircularProgressIndicator()),
+                              ],
+                            )
+                          : _isSorted
+                              ? Column(
+                                  children: [
+                                    ListView.builder(
                                       physics: NeverScrollableScrollPhysics(),
                                       padding: EdgeInsets.only(top: 10),
                                       shrinkWrap: true,
                                       itemCount: sortedContents.length,
                                       itemBuilder: (context, index) {
-                                        return ContentList(
-                                          title: sortedContents[index].title,
-                                          img: sortedContents[index].imgUrl,
-                                          uploadTime:
-                                              sortedContents[index].pubDate,
-                                          owner: ownersMap[sortedContents[index]
-                                                  .owner_id] ??
-                                              sortedContents[index]
-                                                  .owner_id
-                                                  .toString(),
-                                          url: sortedContents[index].url,
+                                        return Column(
+                                          children: [
+                                            ContentList(
+                                              title:
+                                                  sortedContents[index].title,
+                                              img: sortedContents[index].imgUrl,
+                                              uploadTime:
+                                                  sortedContents[index].pubDate,
+                                              owner: ownersMap[
+                                                      sortedContents[index]
+                                                          .owner_id] ??
+                                                  sortedContents[index]
+                                                      .owner_id
+                                                      .toString(),
+                                              url: sortedContents[index].url,
+                                            ),
+                                          ],
                                         );
                                       },
-                                    )
-                                  : Center(
-                                      child: Text(
-                                        'No Data',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
                                     ),
+                                    if (_isLoadingNewCont)
+                                      CircularProgressIndicator(),
+                                  ],
+                                )
+                              : Center(
+                                  child: Text(
+                                    'No Data',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
                     ],
                   ),
                 ),
@@ -199,21 +225,19 @@ class _ContentListScreenState extends State<ContentListScreen> {
       _isSorted = true;
 
       _ownerId = ownerId;
-
     });
 
     getSortedContents(ownerId);
-
   }
 
-  void getSortedContents(ownerId){
-
+  void getSortedContents(ownerId) {
     ApiManager()
-        .getContentsByOwner(ownerId,pageNumberOwner)
+        .getContentsByOwner(ownerId, pageNumberOwner)
         .then((List<TechDailyContent> value) {
       if (ownerId == currentOwner) {
         setState(() {
           sortedContents = value;
+          _isLoadingNewCont = false;
         });
       }
     });
@@ -226,24 +250,32 @@ class _ContentListScreenState extends State<ContentListScreen> {
   }
 
   void _scrollToTop() {
-    print('Trying to scroll.....');
     _fullController.animateTo(0.0,
         duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
     // _scrollController.jumpTo(_scrollController.position.minScrollExtent);
   }
 
   void getMoreContents() {
+    setState(() {
+      _isLoadingNewCont = true;
+    });
     ApiManager().getContents(pageNumber).then((List<TechDailyContent> value) {
       setState(() {
         allContents.addAll(value);
         pageNumber += 1;
+        _isLoadingNewCont = false;
       });
     });
   }
 
   void getMoreSortedContents(int ownerId) {
+    setState(() {
+      _isLoadingNewCont = true;
+    });
     print(ownerId);
-    ApiManager().getContentsByOwner(ownerId,pageNumber).then((List<TechDailyContent> value) {
+    ApiManager()
+        .getContentsByOwner(ownerId, pageNumber)
+        .then((List<TechDailyContent> value) {
       setState(() {
         sortedContents.addAll(value);
         pageNumber += 1;
@@ -288,22 +320,44 @@ class _ContentListScreenState extends State<ContentListScreen> {
 
     // Setup the listener.
     _fullController.addListener(() {
+      // var index = ((_fullController.position.pixels ) / 100.0).round() -3 ;
+      // print('Scroll Index '+index.toString());
+      //
+      // var dif = allContents.length - index;
+      // print('difference = '+dif.toString());
+      //
+      // if(dif<=3){
+      //   _isSorted?getMoreSortedContents(_ownerId):
+      //       getMoreContents();
+      // }
+
+      // if (_fullController.position.extentAfter < 300) {
+      //
+      //   _isSorted ? getMoreSortedContents(_ownerId) : getMoreContents();
+
+      // if (_isLoadingNewCont) {
+      //   setState(() {
+      //     _atBottom = true;
+      //   });
+      // } else {
+      //   setState(() {
+      //     _atBottom = false;
+      //   });
+      // }
+
+      // }
+
       if (_fullController.position.atEdge) {
         if (_fullController.position.pixels == 0) {
           // You're at the top.
         } else {
           // You're at the bottom.
           print('eitto eshe gechi');
-          _isSorted?getMoreSortedContents(_ownerId):
-          getMoreContents();
+          _isSorted ? getMoreSortedContents(_ownerId) : getMoreContents();
         }
       }
     });
 
     super.initState();
   }
-
-
-
-
 }

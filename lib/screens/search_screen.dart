@@ -16,7 +16,7 @@ class SearchScreen extends SearchDelegate<String> {
 
   Map<int, String> _ownersMap = {};
 
-  SearchScreen(this.contentTitles,this._ownersMap);
+  SearchScreen(this.contentTitles, this._ownersMap);
 
   // AnimationController controller;
 
@@ -56,62 +56,58 @@ class SearchScreen extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    query.isNotEmpty?addToRecentSearches():null;
+    query.isNotEmpty ? addToRecentSearches() : null;
 
     // query.isEmpty? ListView.builder(itemBuilder: ):
 
-    ListView.builder(
-      itemBuilder: (context, index){
-        return ContentList(
-          title: searchedContents[index].title,
-          img: searchedContents[index].imgUrl,
-          uploadTime: searchedContents[index].pubDate,
-          id: searchedContents[index].id,
-          owner: _ownersMap[
-          searchedContents[index].owner_id] ??
-              searchedContents[index]
-                  .owner_id
-                  .toString(),
-          url: searchedContents[index].url,
-        );
-      },
-      itemCount: searchedContents.length,
+    return FutureBuilder(
+        future: getSearchedResults(query),
+        builder: (context, snapshot) {
+          print('snapshot ' + snapshot.data.toString());
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData) {
+            return Center(child: Text('Failed to Load Data'));
+          }
 
 
-    );
+           searchedContents = snapshot.data;
+
+          return ListView.builder(
+            itemBuilder: (context, index) {
+              return ContentList(
+                title: searchedContents[index].title,
+                img: searchedContents[index].imgUrl,
+                uploadTime: searchedContents[index].pubDate,
+                id: searchedContents[index].id,
+                owner: _ownersMap[searchedContents[index].owner_id] ??
+                    searchedContents[index].owner_id.toString(),
+                url: searchedContents[index].url,
+              );
+            },
+            itemCount: searchedContents.length,
+          );
+        });
+
+
+
+
+
+    print('searched contents length'+searchedContents.length.toString());
+
+
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
     if (query.isEmpty) {
-      Future<List<dynamic>> getRecentSearches() async {
-        List recentSearches = [];
-        var currentUser = FirebaseAuth.instance.currentUser;
-
-        CollectionReference _collectionRef =
-            FirebaseFirestore.instance.collection("users-recent-searches");
-        await _collectionRef
-            .doc(currentUser.email)
-            .collection("recent-searches")
-            .get()
-            .then((value) {
-          print('value: ' + value.docs.toString());
-          value.docs.forEach((element) {
-            print('element ' + element.data()['search']);
-            recentSearches.add(element.data()['search']);
-          });
-          print(recentSearches.length);
-        });
-
-        return recentSearches;
-      }
-
       return FutureBuilder(
           future: getRecentSearches(),
           builder: (context, snapshot) {
             print('snapshot ' + snapshot.data.toString());
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CupertinoActivityIndicator());
+              return Center(child: CircularProgressIndicator());
             }
             if (!snapshot.hasData) {
               return Center(child: Text('Failed to Load Data'));
@@ -120,8 +116,10 @@ class SearchScreen extends SearchDelegate<String> {
             final suggestionList = snapshot.data;
             return ListView.builder(
               itemBuilder: (context, index) => ListTile(
-                onTap: (){ showResults(context);
-                query = suggestionList[index];},
+                onTap: () {
+                  showResults(context);
+                  query = suggestionList[index];
+                },
                 leading: Icon(
                   Icons.history,
                   color: Colors.white,
@@ -132,54 +130,30 @@ class SearchScreen extends SearchDelegate<String> {
             );
           });
     } else {
-      Future<List<TechDailyContent>> getContentTitles(String queryTitle) async {
-        var client = http.Client();
-        try {
-          var response = await client.get(Uri.parse(
-              'https://techdailyapi.herokuapp.com/contents/search/title/' +
-                  queryTitle));
-
-          if (response.statusCode == 200) {
-            print("'/contents' endpoint statusCode: 200");
-            var jsonString = response.body;
-
-            Map<String, dynamic> jsonMap = json.decode(jsonString);
-            // print(jsonMap['results']);
-
-            List results = jsonMap['results'];
-            print(results);
-            //print("fetched 'contents' list length: " + results.length.toString());
-
-            return results
-                .map((content) => TechDailyContent.fromJson(content))
-                .toList();
-          }
-        } catch (e) {
-          print('error:' + e.toString());
-        }
-        return null;
-      }
-
       return FutureBuilder(
-          future: getContentTitles(query),
+          future: getTitleSuggestions(query),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CupertinoActivityIndicator());
+              return Center(child: CircularProgressIndicator());
             }
+            print('Snapshot: '+snapshot.data.toString());
             if (!snapshot.hasData) {
               return Center(child: Text('Failed to Load Data'));
             }
 
-            final List<TechDailyContent> suggestionList = snapshot.data;
-            searchedContents = snapshot.data;
+            final List suggestionList = snapshot.data;
+            // searchedContents = snapshot.data;
             List<String> titleList = [];
             suggestionList.forEach((element) {
-              titleList.add(query);
+              titleList.add(element);
             });
 
             return ListView.builder(
               itemBuilder: (context, index) => ListTile(
-                onTap: () => showResults(context),
+                onTap: () {
+                  query = titleList[index];
+                  print('query:'+query);
+                  showResults(context);},
                 leading: Icon(
                   Icons.search,
                   color: Colors.white,
@@ -190,6 +164,97 @@ class SearchScreen extends SearchDelegate<String> {
             );
           });
     }
+  }
+
+  Future<List<dynamic>> getRecentSearches() async {
+    List recentSearches = [];
+    var currentUser = FirebaseAuth.instance.currentUser;
+
+    CollectionReference _collectionRef =
+    FirebaseFirestore.instance.collection("users-recent-searches");
+    await _collectionRef
+        .doc(currentUser.email)
+        .collection("recent-searches")
+        .get()
+        .then((value) {
+      print('value: ' + value.docs.toString());
+      value.docs.forEach((element) {
+        print('element ' + element.data()['search']);
+        recentSearches.add(element.data()['search']);
+      });
+      print(recentSearches.length);
+    });
+
+    return recentSearches;
+  }
+
+
+
+  Future<List> getTitleSuggestions(String queryTitle) async {
+    print(queryTitle);
+    var client = http.Client();
+    try {
+      var response = await client.get(Uri.parse(
+          'https://techdailyapi.herokuapp.com/contents/suggestion/title/' +
+              queryTitle));
+
+      if (response.statusCode == 200) {
+        print("'/contents' endpoint statusCode: 200");
+        var jsonString = response.body;
+
+        Map<String, dynamic> jsonMap = json.decode(jsonString);
+        // print(jsonMap['results']);
+
+        List results = jsonMap['results'];
+        // print(results);
+        //print("fetched 'contents' list length: " + results.length.toString());
+
+        // print('this is the result:'+results.toString()+results.length.toString());
+        return results;
+
+
+      }
+      else
+        print('error no response');
+    } catch (e) {
+      print('error:' + e.toString());
+      return null;
+    }
+
+  }
+
+  Future<List<TechDailyContent>> getSearchedResults(String queryTitle) async {
+    print(queryTitle);
+    var client = http.Client();
+    try {
+      var response = await client.get(Uri.parse(
+          'https://techdailyapi.herokuapp.com/contents/search/title/' +
+              queryTitle));
+
+      if (response.statusCode == 200) {
+        print("'/contents' endpoint statusCode: 200");
+        var jsonString = response.body;
+
+        Map<String, dynamic> jsonMap = json.decode(jsonString);
+        // print(jsonMap['results']);
+
+        List results = jsonMap['results'];
+        // print(results);
+        //print("fetched 'contents' list length: " + results.length.toString());
+
+        // print('this is the result:'+results.toString()+results.length.toString());
+        return results
+            .map((content) => TechDailyContent.fromJson(content))
+            .toList();
+
+      }
+      else
+        print('error no response');
+    } catch (e) {
+      print('error:' + e.toString());
+      return null;
+    }
+
   }
 
   Future addToRecentSearches() async {
